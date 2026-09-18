@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aula ao vivo: Três Pilares da Criação de Conteúdo | Suporte Comunica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- Fonts (as mesmas do site no ar) ---------- */
+  @font-face { font-family: 'Gyst'; src: url('fonts/Gyst-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; }
+  @font-face { font-family: 'Gyst'; src: url('fonts/Gyst-LightItalic.woff2') format('woff2'); font-weight: 300; font-style: italic; }
+
+  /* ---------- Tokens (extraídos de suportecomunica.com.br/lp) ---------- */
+  :root {
+    --yellow: #EFE625;
+    --yellow-soft: #F5FA96;
+    --offwhite: #F5F6F6;
+    --ink: #1A1A1A;
+    --ink-64: rgba(26,26,26,.64);
+    --ink-40: rgba(26,26,26,.4);
+    --blue: #0032A0;
+    --font-sans: 'Instrument Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-serif: 'Gyst', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-sans); color: var(--ink); -webkit-font-smoothing: antialiased; overflow-x: hidden; background: var(--offwhite); }
+  img { max-width: 100%; display: block; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  em, .serif { font-family: var(--font-serif); font-style: italic; font-weight: 300; letter-spacing: 0; }
+
+  /* ---------- Background vivo (gradiente do site + blobs em drift) ---------- */
+  .bg {
+    position: fixed; inset: 0; z-index: -2;
+    background: linear-gradient(180deg, var(--offwhite) 0%, #FBFAD9 30%, var(--yellow) 100%);
+  }
+  .bg .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .55; will-change: transform; }
+  .bg .b1 { width: 60vw; height: 60vw; background: radial-gradient(circle, var(--yellow) 0%, rgba(239,230,37,0) 70%); top: -20vw; right: -18vw; animation: drift1 26s ease-in-out infinite alternate; }
+  .bg .b2 { width: 50vw; height: 50vw; background: radial-gradient(circle, var(--yellow-soft) 0%, rgba(245,250,150,0) 70%); bottom: -12vw; left: -16vw; animation: drift2 32s ease-in-out infinite alternate; }
+  .bg .b3 { width: 34vw; height: 34vw; background: radial-gradient(circle, rgba(239,230,37,.8) 0%, rgba(239,230,37,0) 70%); top: 42%; left: 58%; animation: drift3 38s ease-in-out infinite alternate; }
+  @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(-8vw, 10vh) scale(1.15); } }
+  @keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(10vw, -8vh) scale(1.1); } }
+  @keyframes drift3 { from { transform: translate(0,0) scale(.9); } to { transform: translate(-6vw, -10vh) scale(1.2); } }
+  @media (prefers-reduced-motion: reduce) { .bg .blob { animation: none; } }
+
+  /* ---------- Componentes base ---------- */
+  .pill-blue {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue); color: #fff; border-radius: 999px;
+    padding: 10px 20px; font-size: 14px; font-weight: 500; letter-spacing: .2px;
+  }
+  .pill-soft {
+    display: inline-flex; align-items: center;
+    background: rgba(245,250,150,.9); color: var(--ink); border-radius: 999px;
+    padding: 8px 16px; font-size: 14px; font-weight: 500;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 56px; padding: 16px 40px; border: none; cursor: pointer;
+    border-radius: 999px; text-decoration: none;
+    background: var(--ink); color: #fff;
+    font-family: var(--font-sans); font-size: 15px; font-weight: 500;
+    letter-spacing: .5px; text-transform: uppercase;
+    transition: transform .3s cubic-bezier(.25,.46,.45,.94), background .3s ease, box-shadow .3s ease;
+  }
+  .btn:hover { background: #000; transform: translateY(-2px); box-shadow: 0 16px 36px rgba(26,26,26,.22); }
+  .btn:active { transform: translateY(0) scale(.98); }
+
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+  .reveal.is-visible { opacity: 1; transform: none; }
+  .reveal[data-delay="1"] { transition-delay: .1s; }
+  .reveal[data-delay="2"] { transition-delay: .2s; }
+  .reveal[data-delay="3"] { transition-delay: .3s; }
+
+  h1, h2 { font-weight: 400; letter-spacing: -.01em; }
+  h1 { font-size: clamp(38px, 5vw, 60px); line-height: 1.08; }
+  h2 { font-size: clamp(32px, 4vw, 48px); line-height: 1.1; }
+  h1 em, h2 em { font-size: 1.02em; }
+
+  /* balance tipográfico: sem palavra órfã na última linha
+     e sem palavra solta iniciando frase no fim da linha */
+  h1, h2, h3, .compare-title, .form-title { text-wrap: balance; }
+  p, li, .hero-sub, .form-note, .bio, .authority-micro, .final-content p { text-wrap: pretty; }
+
+  /* ---------- Topo ---------- */
+  .topbar { position: absolute; top: 0; left: 0; right: 0; z-index: 10; padding: 32px 0; display: flex; justify-content: center; }
+  .s-mark { font-family: var(--font-serif); font-style: italic; font-size: 34px; color: var(--ink); line-height: 1; border-bottom: 2px solid var(--ink); padding-bottom: 2px; text-decoration: none; }
+
+  /* ---------- Dobra 1: Hero split (form sempre na dobra) ---------- */
+  .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 96px 0 48px; }
+  .hero .container { width: 100%; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: center; }
+  .hero-grid > * { min-width: 0; }
+  .lead-form .row input { min-width: 0; }
+  .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; position: relative; text-align: left; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--blue); color: #fff; border-radius: 999px;
+    padding: 10px 20px; font-size: 12.5px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); animation: pulse 1.6s ease infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.65); } }
+  .hero h1 { font-size: clamp(28px, 3.6vw, 50px); }
+  .hero-sub { font-size: 16.5px; line-height: 1.55; color: var(--ink-64); max-width: 480px; }
+
+  /* chips flutuantes (parallax de mouse, usados só na dobra do gap) */
+  .float-chip { position: absolute; z-index: 2; will-change: transform; animation: floaty 5.5s ease-in-out infinite alternate; }
+  @keyframes floaty { from { translate: 0 -6px; } to { translate: 0 8px; } }
+
+  .form-card {
+    background: rgba(255,255,255,.55); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.7);
+    border-radius: 28px; overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px rgba(26,26,26,.08);
+  }
+
+  /* mídia no topo do card, seguindo o shape do form */
+  .form-media { position: relative; height: 168px; overflow: hidden; flex-shrink: 0; }
+  .form-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; animation: kenburns 18s ease-in-out infinite alternate; }
+  @keyframes kenburns { from { transform: scale(1); } to { transform: scale(1.12); } }
+  .form-media .ring { position: absolute; top: 50%; left: 24%; width: 150px; aspect-ratio: 1; transform: translate(-50%,-50%); border-radius: 50%;
+    background: radial-gradient(circle, rgba(217,217,217,0) 58%, var(--yellow) 76%, rgba(239,230,37,0) 95%); }
+  .form-media .slight { position: absolute; right: 22px; bottom: 10px; font-family: var(--font-serif); font-style: italic; font-size: 28px; color: var(--yellow); }
+  @media (prefers-reduced-motion: reduce) { .form-media img { animation: none; } }
+
+  .form-body { padding: 24px 28px 28px; display: flex; flex-direction: column; gap: 12px; }
+  .lead-form { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+  .lead-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .lead-form input {
+    width: 100%; min-height: 52px; padding: 8px 24px;
+    font-family: var(--font-sans); font-size: 15.5px; color: var(--ink);
+    background: #fff; border: none; border-radius: 999px;
+    outline: none; box-shadow: 0 0 0 0 rgba(26,26,26,0);
+    transition: box-shadow .3s ease, transform .3s ease;
+  }
+  .lead-form input::placeholder { color: var(--ink-40); }
+  .lead-form input:focus { box-shadow: 0 0 0 2px var(--ink); }
+  .lead-form input:hover { transform: translateY(-1px); }
+  .lead-form .btn { width: 100%; min-height: 52px; padding: 14px 24px; }
+  .form-title { font-size: 16.5px; line-height: 1.4; font-weight: 500; }
+  .form-note { font-size: 12.5px; color: var(--ink-64); text-align: center; }
+
+  /* ---------- Dobra 2: Autoridade + logos + ticker de influencers ---------- */
+  .authority { padding: 120px 0 100px; text-align: center; }
+  .authority-head { max-width: 720px; margin: 0 auto 56px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .authority-head p { font-size: 16.5px; line-height: 1.6; color: var(--ink-64); max-width: 560px; }
+
+  .marquee { overflow: hidden; position: relative; padding: 30px 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+  .marquee-track { display: flex; gap: 80px; width: max-content; animation: marquee 26s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .logo-item { font-size: 24px; font-weight: 500; letter-spacing: .04em; color: var(--ink-40); white-space: nowrap; text-transform: uppercase; }
+  .logo-item.serif { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 27px; text-transform: none; }
+
+  /* slider draggable dos influencers */
+  .talent-slider { overflow: hidden; margin-top: 40px; padding: 14px 0; cursor: grab; touch-action: pan-y;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+  .talent-slider.dragging { cursor: grabbing; }
+  .talent-slider.dragging .talent-card { pointer-events: none; }
+  .talent-track { display: flex; gap: 20px; width: max-content; padding: 0 max(24px, calc((100vw - 1080px) / 2)); will-change: transform; user-select: none; -webkit-user-select: none; }
+  .drag-hint { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 13px; color: var(--ink-64); letter-spacing: .4px; text-transform: uppercase; }
+  .drag-hint .drag-arrows { animation: nudge 2.2s ease-in-out infinite; display: inline-block; }
+  @keyframes nudge { 0%,100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
+  .talent-card {
+    width: 320px; height: 440px; flex-shrink: 0; position: relative;
+    border-radius: 26px; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(26,26,26,.08);
+    transition: transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s ease;
+    text-align: left;
+  }
+  .talent-card:hover { transform: translateY(-8px) rotate(-1.2deg); box-shadow: 0 24px 48px rgba(26,26,26,.16); }
+  /* imagem full: a foto (ou placeholder) ocupa o card inteiro */
+  .talent-photo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .talent-photo .monogram { font-family: var(--font-serif); font-style: italic; font-size: 130px; color: rgba(26,26,26,.82); }
+  .talent-photo.g1 { background: linear-gradient(233deg, #EFE625 0%, #F5F6F6 100%); }
+  .talent-photo.g2 { background: linear-gradient(62deg, #EFE625 4%, #F5FA96 70%); }
+  .talent-photo.g3 { background: linear-gradient(223deg, #F5F6F6 0%, #F2EF98 32%, #EFE625 100%); }
+  .talent-photo .ring { position: absolute; width: 86%; aspect-ratio: 1; border-radius: 50%;
+    background: radial-gradient(circle, rgba(217,217,217,0) 60%, var(--yellow) 77%, rgba(239,230,37,0) 95%); }
+  /* nome no topo do card */
+  .talent-card > .name {
+    position: absolute; top: 18px; left: 22px; right: 22px; z-index: 2;
+    font-size: 20px; font-weight: 600; letter-spacing: -.01em;
+  }
+  /* chip de glass só com o arroba */
+  .talent-meta {
+    position: absolute; left: 14px; bottom: 14px; z-index: 2;
+    display: inline-flex; align-items: center;
+    background: rgba(255,255,255,.34); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,.55); border-radius: 999px;
+    padding: 10px 18px; max-width: calc(100% - 28px);
+    transition: background .35s ease;
+  }
+  .talent-card:hover .talent-meta { background: rgba(255,255,255,.5); }
+  .talent-chip { background: none; color: var(--ink); padding: 0; font-size: 14.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .authority-micro { margin-top: 36px; font-size: 15px; color: var(--ink-64); }
+  .authority-micro em { font-size: 1.1em; }
+
+  /* ---------- Dobra 3: Transformação ---------- */
+  .transform { padding: 110px 0; }
+  .transform-head { text-align: center; max-width: 640px; margin: 0 auto 56px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; perspective: 1200px; }
+  .compare-card {
+    border-radius: 24px; padding: 44px 38px; display: flex; flex-direction: column; gap: 26px;
+    transition: transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s ease;
+    will-change: transform;
+  }
+  .compare-card:hover { transform: translateY(-6px); }
+  .compare-card.a { background: rgba(255,255,255,.6); backdrop-filter: blur(8px); }
+  .compare-card.b { background: var(--ink); color: var(--offwhite); box-shadow: 0 30px 60px rgba(26,26,26,.25); }
+  .compare-tag { font-size: 12.5px; letter-spacing: 1.4px; text-transform: uppercase; font-weight: 600; }
+  .compare-card.a .compare-tag { color: var(--ink-64); }
+  .compare-card.b .compare-tag { color: var(--yellow); }
+  .compare-title { font-size: 27px; font-weight: 500; }
+  .compare-list { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+  .compare-list li { display: flex; gap: 14px; font-size: 16px; line-height: 1.55; }
+  .compare-card.a .compare-list li { color: rgba(26,26,26,.72); }
+  .compare-card.b .compare-list li { color: rgba(245,246,246,.85); }
+  .mark { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; margin-top: 1px; }
+  .compare-card.a .mark { background: rgba(26,26,26,.08); color: var(--ink-64); }
+  .compare-card.b .mark { background: var(--yellow); color: var(--ink); }
+
+  /* ---------- Dobra 4: O Gap (frase + chips + círculo) ---------- */
+  .gap-section { padding: 120px 0 40px; text-align: center; position: relative; }
+  .gap-headline { position: relative; max-width: 760px; margin: 0 auto; }
+  .gap-headline h2 { font-size: clamp(44px, 6.4vw, 76px); line-height: 1.05; }
+  .gap-headline .float-chip.c1 { top: 10px; left: -30px; }
+  .gap-headline .float-chip.c2 { top: 44%; right: -60px; }
+  .gap-headline .float-chip.c3 { bottom: -6px; left: 8%; }
+  .gap-circle {
+    position: relative; width: min(680px, 86vw); aspect-ratio: 1; margin: 64px auto 0;
+    border-radius: 50%; overflow: hidden;
+  }
+  .gap-circle img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform 1.2s cubic-bezier(.22,1,.36,1); }
+  .gap-circle.is-visible img { transform: scale(1); }
+  .gap-circle .tagline { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2; }
+  .gap-texts { max-width: 620px; margin: 72px auto 0; display: flex; flex-direction: column; gap: 48px; }
+  .gap-texts .act { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .gap-texts p { font-size: clamp(19px, 2.2vw, 24px); line-height: 1.45; }
+  .gap-texts p em { font-size: 1.06em; }
+
+  /* ---------- Dobra 5: Para quem é ---------- */
+  .audience { padding: 110px 0; }
+  .audience-head { text-align: center; max-width: 620px; margin: 0 auto 56px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .audience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .audience-card {
+    border-radius: 24px; padding: 40px 32px; background: rgba(255,255,255,.72); backdrop-filter: blur(8px);
+    display: flex; flex-direction: column; gap: 18px; text-align: left;
+    transition: transform .45s cubic-bezier(.22,1,.36,1), box-shadow .45s ease, background .45s ease;
+  }
+  .audience-card:hover { transform: translateY(-8px); background: #fff; box-shadow: 0 24px 48px rgba(26,26,26,.1); }
+  .audience-num { font-family: var(--font-serif); font-style: italic; font-size: 48px; line-height: 1; color: var(--blue); }
+  .audience-card h3 { font-size: 20px; font-weight: 600; line-height: 1.3; }
+  .audience-card p { font-size: 15.5px; line-height: 1.6; color: var(--ink-64); }
+
+  /* ---------- Dobra 6: Mentores ---------- */
+  .team { padding: 110px 0; }
+  .team-head { text-align: center; max-width: 620px; margin: 0 auto 56px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .team-card { display: flex; flex-direction: column; gap: 18px; text-align: left; }
+  .team-photo { position: relative; height: 400px; border-radius: 24px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .team-photo .ring { position: absolute; width: 86%; aspect-ratio: 1; border-radius: 50%; opacity: 0; transition: opacity .5s ease;
+    background: radial-gradient(circle, rgba(217,217,217,0) 60%, var(--yellow) 77%, rgba(239,230,37,0) 95%); }
+  .team-card:hover .ring { opacity: 1; }
+  .team-photo.g1 { background: linear-gradient(233deg, #EFE625 0%, #F5F6F6 100%); }
+  .team-photo.g2 { background: linear-gradient(62deg, #EFE625 4%, #F5FA96 70%); }
+  .team-photo.g3 { background: linear-gradient(223deg, #F5F6F6 0%, #F2EF98 32%, #EFE625 100%); }
+  .team-photo .monogram { font-family: var(--font-serif); font-style: italic; font-size: 110px; color: rgba(26,26,26,.8); }
+  .team-meta { display: flex; flex-direction: column; gap: 8px; }
+  .team-meta .name { font-size: 21px; font-weight: 600; }
+  .team-meta .bio { font-size: 15px; line-height: 1.55; color: var(--ink-64); }
+
+  /* ---------- Dobra 7: Final ---------- */
+  .final { padding: 60px 0 140px; text-align: center; }
+  .final-content { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 26px; }
+  .final-content h2 { font-size: clamp(38px, 5vw, 60px); }
+  .final-content p { font-size: 17.5px; line-height: 1.6; color: var(--ink-64); max-width: 560px; }
+
+  footer { padding: 24px 0 40px; }
+  footer .container { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-64); }
+  footer a { color: var(--ink); text-decoration: none; font-weight: 500; }
+
+  /* ---------- Responsivo ---------- */
+  @media (max-width: 900px) {
+    .hero { min-height: auto; padding: 88px 0 56px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+    .compare-grid, .audience-grid, .team-grid { grid-template-columns: 1fr; }
+    .team-photo { height: 340px; }
+    .form-media { height: 140px; }
+  }
+  @media (max-width: 560px) {
+    .container { padding: 0 18px; }
+    .hero { padding: 76px 0 40px; }
+    .hero-copy { gap: 12px; }
+    .hero h1 { font-size: clamp(25px, 7.4vw, 32px); }
+    .hero-badge { font-size: 11px; padding: 8px 14px; }
+    .hero-sub { display: none; }
+    .form-media { display: none; } /* garante headline + form na dobra do mobile */
+    .form-card { border-radius: 22px; }
+    .form-body { padding: 16px 18px 18px; }
+    .form-title { font-size: 15px; }
+    .lead-form input { min-height: 48px; font-size: 15px; }
+    .lead-form .row { grid-template-columns: 1fr; }
+    .float-chip { display: none; }
+    .gap-headline .float-chip { display: inline-flex; position: static; margin: 4px; animation: none; }
+    .gap-headline { display: flex; flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true">
+  <div class="blob b1" data-parallax="18"></div>
+  <div class="blob b2" data-parallax="-14"></div>
+  <div class="blob b3" data-parallax="24"></div>
+</div>
+
+<header class="topbar">
+  <a class="s-mark" href="#">S</a>
+</header>
+
+<!-- DOBRA 1 · Hero split: headline + form na mesma dobra -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="hero-badge reveal"><span class="dot"></span>Aula exclusiva e gratuita · 27/10 às 20h</span>
+        <h1 class="reveal" data-delay="1">Como se tornar a criadora de conteúdo que as grandes marcas <em>procuram, contratam</em> e pagam bem.</h1>
+        <p class="hero-sub reveal" data-delay="2">Uma aula ao vivo sobre como sair do amadorismo, profissionalizar sua criação de conteúdo e construir uma carreira de autoridade e faturamento.</p>
+      </div>
+
+      <div class="form-card reveal" data-delay="1" id="form">
+        <div class="form-media">
+          <img src="img/fernanda.jpg" alt="Creator sob as luzes do mercado" />
+          <span class="ring"></span>
+          <span class="slight">S/light</span>
+        </div>
+        <div class="form-body">
+          <p class="form-title">Garanta sua vaga gratuita na aula <em>"Três Pilares da Criação de Conteúdo"</em> ao vivo:</p>
+          <form class="lead-form" action="obrigado.html" method="get">
+            <input type="text" name="nome" placeholder="Nome completo" required />
+            <input type="email" name="email" placeholder="E-mail profissional" required />
+            <div class="row">
+              <input type="tel" name="whatsapp" placeholder="WhatsApp com DDD" required />
+              <input type="text" name="instagram" placeholder="@ do Instagram" required />
+            </div>
+            <button class="btn" type="submit">Quero ser uma criadora profissional</button>
+          </form>
+          <span class="form-note">Evento 100% online e gratuito. Vagas limitadas para interação ao vivo.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOBRA 2 · Autoridade + logos + ticker de talentos -->
+<section class="authority">
+  <div class="container">
+    <div class="authority-head">
+      <h2 class="reveal">Um método infalível para você profissionalizar sua criação de <em>conteúdo</em>.</h2>
+      <p class="reveal" data-delay="1">Criado pela Suporte Comunicação, a agência por trás das grandes marcas nacionais e internacionais.</p>
+    </div>
+  </div>
+
+  <div class="marquee reveal">
+    <div class="marquee-track">
+      <span class="logo-item">Louboutin</span>
+      <span class="logo-item">Ferragamo</span>
+      <span class="logo-item">Philipp Plein</span>
+      <span class="logo-item">Casa Tés</span>
+      <span class="logo-item">Resid Club &amp; Hotels</span>
+      <span class="logo-item">Terminal BTG</span>
+      <span class="logo-item">Louboutin</span>
+      <span class="logo-item">Ferragamo</span>
+      <span class="logo-item">Philipp Plein</span>
+      <span class="logo-item">Casa Tés</span>
+      <span class="logo-item">Resid Club &amp; Hotels</span>
+      <span class="logo-item">Terminal BTG</span>
+    </div>
+  </div>
+
+  <div class="talent-slider reveal" data-delay="1" id="talentSlider">
+    <div class="talent-track" id="talentTrack">
+      <div class="talent-card">
+        <div class="talent-photo g1"><span class="ring"></span><span class="monogram">G</span></div>
+        <span class="name">Gustavo Paz</span>
+        <div class="talent-meta"><span class="talent-chip">@guupaz</span></div>
+      </div>
+      <div class="talent-card">
+        <div class="talent-photo g2"><span class="ring"></span><span class="monogram">S</span></div>
+        <span class="name">Stella Yeshua</span>
+        <div class="talent-meta"><span class="talent-chip">@stellayeshua</span></div>
+      </div>
+      <div class="talent-card">
+        <div class="talent-photo g3"><span class="ring"></span><span class="monogram">G</span></div>
+        <span class="name">Giovana Batista</span>
+        <div class="talent-meta"><span class="talent-chip">@giovanabatista</span></div>
+      </div>
+      <div class="talent-card">
+        <div class="talent-photo g2"><span class="ring"></span><span class="monogram">V</span></div>
+        <span class="name">Vincenzo Saggio</span>
+        <div class="talent-meta"><span class="talent-chip">@vincenzosaggio</span></div>
+      </div>
+      <div class="talent-card">
+        <div class="talent-photo g1"><span class="ring"></span><span class="monogram">A</span></div>
+        <span class="name">Analu Sampaio</span>
+        <div class="talent-meta"><span class="talent-chip">@analusampaiooficial</span></div>
+      </div>
+      <!-- set 2 (loop infinito) -->
+      <div class="talent-card" aria-hidden="true">
+        <div class="talent-photo g1"><span class="ring"></span><span class="monogram">G</span></div>
+        <span class="name">Gustavo Paz</span>
+        <div class="talent-meta"><span class="talent-chip">@guupaz</span></div>
+      </div>
+      <div class="talent-card" aria-hidden="true">
+        <div class="talent-photo g2"><span class="ring"></span><span class="monogram">S</span></div>
+        <span class="name">Stella Yeshua</span>
+        <div class="talent-meta"><span class="talent-chip">@stellayeshua</span></div>
+      </div>
+      <div class="talent-card" aria-hidden="true">
+        <div class="talent-photo g3"><span class="ring"></span><span class="monogram">G</span></div>
+        <span class="name">Giovana Batista</span>
+        <div class="talent-meta"><span class="talent-chip">@giovanabatista</span></div>
+      </div>
+      <div class="talent-card" aria-hidden="true">
+        <div class="talent-photo g2"><span class="ring"></span><span class="monogram">V</span></div>
+        <span class="name">Vincenzo Saggio</span>
+        <div class="talent-meta"><span class="talent-chip">@vincenzosaggio</span></div>
+      </div>
+      <div class="talent-card" aria-hidden="true">
+        <div class="talent-photo g1"><span class="ring"></span><span class="monogram">A</span></div>
+        <span class="name">Analu Sampaio</span>
+        <div class="talent-meta"><span class="talent-chip">@analusampaiooficial</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <span class="drag-hint reveal">Arraste pra conhecer <span class="drag-arrows">→</span></span>
+    <p class="authority-micro reveal">O mesmo método aplicado a essas carreiras será revelado ao vivo na <em>Masterclass</em>.</p>
+  </div>
+</section>
+
+<!-- DOBRA 3 · A Transformação -->
+<section class="transform">
+  <div class="container">
+    <div class="transform-head">
+      <span class="pill-blue reveal">A virada de chave</span>
+      <h2 class="reveal" data-delay="1">Do amadorismo à carreira <em>profissional</em>.</h2>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-card a reveal" data-tilt>
+        <span class="compare-tag">Ponto A · Onde você está hoje</span>
+        <span class="compare-title">Criadora <em>Amadora</em></span>
+        <ul class="compare-list">
+          <li><span class="mark">×</span>Postando sem estratégia, refém do algoritmo e sem saber qual é o seu futuro no mercado.</li>
+          <li><span class="mark">×</span>Presa a mimos e permutas, sem saber precificar seu trabalho nem avaliar seu próprio público.</li>
+          <li><span class="mark">×</span>Insegura nas negociações, agindo como uma vitrine casual que só posta por postar.</li>
+        </ul>
+      </div>
+      <div class="compare-card b reveal" data-delay="1" data-tilt>
+        <span class="compare-tag">Ponto B · Após a aula</span>
+        <span class="compare-title">A Profissão <em>Creator</em></span>
+        <ul class="compare-list">
+          <li><span class="mark">✓</span>Posicionamento claro com uma narrativa autoral que atrai as empresas certas.</li>
+          <li><span class="mark">✓</span>Avaliação comercial e métricas consolidadas para provar seu valor e fechar contratos pagos.</li>
+          <li><span class="mark">✓</span>Visão de carreira de longo prazo para ser contratada como parceira estratégica das marcas.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOBRA 4 · O Gap (linguagem da LP no ar) -->
+<section class="gap-section">
+  <div class="container">
+    <div class="gap-headline reveal">
+      <span class="float-chip pill-blue c1" data-parallax="-28">Comunidade exclusiva</span>
+      <span class="float-chip pill-soft c2" data-parallax="34">Networking</span>
+      <span class="float-chip pill-soft c3" data-parallax="-22">Trilhas criativas</span>
+      <h2>Ter seguidores não é ter <em>uma marca.</em></h2>
+    </div>
+
+    <div class="gap-circle reveal" data-delay="1">
+      <img src="img/fernanda.jpg" alt="Creators sob as luzes do mercado" />
+      <span class="tagline pill-blue">Postar ≠ Assinar</span>
+    </div>
+
+    <div class="gap-texts">
+      <div class="act reveal">
+        <span class="pill-blue">O novo jogo</span>
+        <p>O mercado mudou. Grandes marcas e agências não procuram apenas alcance bruto, elas procuram creators com marcas pessoais maduras, com narrativa consistente e <em>bastidores profissionais</em>.</p>
+      </div>
+      <div class="act reveal">
+        <span class="pill-blue">A resposta</span>
+        <p>Postar é diferente de assinar contratos. Essa aula ao vivo vai te entregar um método prático para colocar o seu nome <em>sob as luzes</em> do mercado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOBRA 5 · Para quem é -->
+<section class="audience">
+  <div class="container">
+    <div class="audience-head">
+      <span class="pill-blue reveal">Para quem é</span>
+      <h2 class="reveal" data-delay="1">Esta aula foi desenhada para você <em>que:</em></h2>
+    </div>
+    <div class="audience-grid">
+      <div class="audience-card reveal">
+        <span class="audience-num">1</span>
+        <h3>Quer transformar criação de conteúdo em profissão</h3>
+        <p>Já cria ou quer criar conteúdo com consistência, mas precisa organizar a gestão comercial e faturar de verdade.</p>
+      </div>
+      <div class="audience-card reveal" data-delay="1">
+        <span class="audience-num">2</span>
+        <h3>É criadora de nichos como Moda, Beleza e Lifestyle</h3>
+        <p>Busca um posicionamento sólido para se conectar com as principais marcas do mercado.</p>
+      </div>
+      <div class="audience-card reveal" data-delay="2">
+        <span class="audience-num">3</span>
+        <h3>Quer deixar de ser vitrine de mimos</h3>
+        <p>E passar a ser reconhecida, avaliada e remunerada como uma parceira comercial pelas marcas e agências do seu nicho.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOBRA 6 · Os Mentores -->
+<section class="team">
+  <div class="container">
+    <div class="team-head">
+      <span class="pill-blue reveal">Chancela de autoridade</span>
+      <h2 class="reveal" data-delay="1">Com quem você vai <em>aprender</em>:</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-card reveal">
+        <div class="team-photo g1"><span class="ring"></span><span class="monogram">R</span></div>
+        <div class="team-meta">
+          <span class="name">Ricardo Franca Cruz</span>
+          <span class="bio">Especialista no mercado de influência, estratégia e novos modelos de negócios para criadores.</span>
+        </div>
+      </div>
+      <div class="team-card reveal" data-delay="1">
+        <div class="team-photo g2"><span class="ring"></span><span class="monogram">R</span></div>
+        <div class="team-meta">
+          <span class="name">Renata Grabert</span>
+          <span class="bio">Fundadora da Suporte Comunica, referência em PR, relações públicas e mercado de luxo e lifestyle.</span>
+        </div>
+      </div>
+      <div class="team-card reveal" data-delay="2">
+        <div class="team-photo g3"><span class="ring"></span><span class="monogram">T</span></div>
+        <div class="team-meta">
+          <span class="name">Thiago Neves</span>
+          <span class="bio">Mídia, curadoria e inteligência comercial para criadores de conteúdo.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOBRA 7 · Chamada final -->
+<section class="final">
+  <div class="container">
+    <div class="final-content">
+      <span class="pill-blue reveal">Transmissão ao vivo · 27/10 · 20h</span>
+      <h2 class="reveal" data-delay="1">Chegou a hora de viver da sua criação de <em>conteúdo</em>.</h2>
+      <p class="reveal" data-delay="2">Acompanhe a transmissão ao vivo no dia 27/10, às 20h, e dê o primeiro passo para ser contratada pelas grandes marcas.</p>
+      <a class="btn reveal" data-delay="3" href="#form">Quero me inscrever agora</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span>suportecomunica.com.br</span>
+    <a href="#form">Garanta sua vaga</a>
+  </div>
+</footer>
+
+<script>
+  // Reveals
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Parallax de mouse (blobs do fundo + chips flutuantes)
+  const parallaxEls = [...document.querySelectorAll('[data-parallax]')];
+  let mx = 0, my = 0, px = 0, py = 0, rafId = null;
+  function tick() {
+    px += (mx - px) * .06; py += (my - py) * .06;
+    parallaxEls.forEach(el => {
+      const f = parseFloat(el.dataset.parallax) / 100;
+      el.style.transform = `translate(${px * f * 60}px, ${py * f * 60}px)`;
+    });
+    if (Math.abs(mx - px) > .001 || Math.abs(my - py) > .001) { rafId = requestAnimationFrame(tick); }
+    else { rafId = null; }
+  }
+  window.addEventListener('pointermove', (e) => {
+    mx = (e.clientX / innerWidth) - .5;
+    my = (e.clientY / innerHeight) - .5;
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }, { passive: true });
+
+  // Slider draggable e infinito dos influencers (wrap seamless + inércia)
+  (function () {
+    const slider = document.getElementById('talentSlider');
+    const track = document.getElementById('talentTrack');
+    if (!slider || !track) return;
+    let x = 0, vel = 0, dragging = false, startX = 0, lastX = 0, lastT = 0, momentumId = null;
+    const cards = track.children;
+    /* largura de um set = distância entre o card 0 e o primeiro card do set duplicado */
+    const setW = () => (cards.length >= 2 ? cards[cards.length / 2].offsetLeft - cards[0].offsetLeft : track.scrollWidth / 2);
+    function apply() {
+      const w = setW();
+      let wrapped = x % w;
+      if (wrapped > 0) wrapped -= w;
+      track.style.transform = `translateX(${wrapped}px)`;
+    }
+    function momentum() {
+      if (dragging) return;
+      x += vel; vel *= .95;
+      apply();
+      if (Math.abs(vel) > .05) momentumId = requestAnimationFrame(momentum);
+      else momentumId = null;
+    }
+    slider.addEventListener('pointerdown', (e) => {
+      dragging = true; slider.classList.add('dragging');
+      startX = e.clientX - x; lastX = e.clientX; lastT = performance.now(); vel = 0;
+      if (momentumId) { cancelAnimationFrame(momentumId); momentumId = null; }
+      slider.setPointerCapture(e.pointerId);
+    });
+    slider.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      x = e.clientX - startX;
+      const now = performance.now(), dt = now - lastT;
+      if (dt > 0) { vel = (e.clientX - lastX) / dt * 16; }
+      lastX = e.clientX; lastT = now;
+      apply();
+    });
+    function release() {
+      if (!dragging) return;
+      dragging = false; slider.classList.remove('dragging');
+      if (!momentumId) momentumId = requestAnimationFrame(momentum);
+    }
+    slider.addEventListener('pointerup', release);
+    slider.addEventListener('pointercancel', release);
+    apply();
+  })();
+
+  // Tilt sutil nos cards do comparativo
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5;
+      const y = (e.clientY - r.top) / r.height - .5;
+      card.style.transform = `translateY(-6px) rotateX(${ -y * 4 }deg) rotateY(${ x * 4 }deg)`;
+    });
+    card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+  });
+</script>
+
+</body>
+</html>

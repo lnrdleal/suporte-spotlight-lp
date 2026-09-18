@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Suporte Spotlight — S/light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- Fonts ---------- */
+  @font-face { font-family: 'Gilroy'; src: url('fonts/Gilroy-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; }
+  @font-face { font-family: 'Gilroy'; src: url('fonts/Gilroy-RegularItalic.woff2') format('woff2'); font-weight: 400; font-style: italic; }
+  @font-face { font-family: 'Gilroy'; src: url('fonts/Gilroy-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; }
+  @font-face { font-family: 'Gilroy'; src: url('fonts/Gilroy-Semibold.woff2') format('woff2'); font-weight: 600; font-style: normal; }
+  @font-face { font-family: 'Gilroy'; src: url('fonts/Gilroy-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; }
+  @font-face { font-family: 'Gilroy'; src: url('fonts/Gilroy-Extrabold.woff2') format('woff2'); font-weight: 800; font-style: normal; }
+
+  /* ---------- Tokens (do Figma / KV S/light) ---------- */
+  :root {
+    --yellow: #EFE625;
+    --yellow-soft: #F5FA96;
+    --yellow-pale: #F2EE96;
+    --offwhite: #F5F6F6;
+    --ink: #101010;
+    --ink-64: rgba(16,16,16,.64);
+    --blue: #0032A0;
+    --radius-card: 16px;
+    --radius-pill: 40px;
+    --font-sans: 'Gilroy', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--offwhite);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+  .serif-accent { font-family: var(--font-serif); font-style: italic; letter-spacing: 0; }
+
+  .label-pill {
+    display: inline-flex; align-items: center;
+    background: var(--blue); color: #fff;
+    font-size: 13px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500;
+    padding: 9px 16px; border-radius: var(--radius-pill);
+  }
+  .label-pill.outline {
+    background: rgba(255,255,255,.4); color: var(--ink);
+    border: 1px solid rgba(16,16,16,.5);
+  }
+
+  /* ---------- Animações de entrada ---------- */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.is-visible { opacity: 1; transform: none; }
+  .reveal[data-delay="1"] { transition-delay: .12s; }
+  .reveal[data-delay="2"] { transition-delay: .24s; }
+  .reveal[data-delay="3"] { transition-delay: .36s; }
+
+  /* ---------- Topbar ---------- */
+  .topbar { position: absolute; top: 0; left: 0; right: 0; z-index: 10; padding: 28px 0; }
+  .topbar .container { display: flex; justify-content: space-between; align-items: center; }
+  .wordmark { font-weight: 700; font-size: 22px; letter-spacing: -.01em; text-decoration: none; color: var(--ink); }
+  .wordmark span { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
+  .topbar .date { font-size: 14px; letter-spacing: .08em; color: var(--ink-64); }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; padding: 140px 0 96px; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: stretch; }
+  .hero-copy { display: flex; flex-direction: column; justify-content: space-between; gap: 40px; }
+  .hero-copy-top { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; max-width: 640px; }
+  h1 {
+    font-size: clamp(42px, 5.2vw, 68px);
+    line-height: 1.02; font-weight: 500; letter-spacing: -.02em;
+  }
+  h1 .serif-accent { font-size: .94em; }
+  .hero-sub { font-size: 17px; line-height: 1.55; color: var(--ink-64); max-width: 480px; }
+
+  .lead-form { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
+  .lead-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .lead-form input {
+    width: 100%; min-height: 52px; padding: 8px 18px;
+    font-family: var(--font-sans); font-size: 15px; color: var(--ink);
+    background: #fff; border: 1px solid rgba(16,16,16,.14); border-radius: 10px;
+    outline: none; transition: border-color .25s ease;
+  }
+  .lead-form input::placeholder { color: rgba(16,16,16,.42); }
+  .lead-form input:focus { border-color: var(--ink); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 54px; padding: 14px 28px; border: none; cursor: pointer;
+    border-radius: var(--radius-pill);
+    background: var(--ink); color: var(--yellow);
+    font-family: var(--font-sans); font-size: 16px; font-weight: 600;
+    transition: transform .25s cubic-bezier(.25,.46,.45,.94), background .25s ease;
+  }
+  .btn:hover { background: #000; transform: translateY(-2px); }
+  .btn .arrow { transition: transform .25s ease; }
+  .btn:hover .arrow { transform: translateX(4px); }
+  .form-note { font-size: 12.5px; color: var(--ink-64); letter-spacing: .02em; }
+
+  .hero-badge { display: flex; align-items: baseline; gap: 16px; }
+  .hero-badge .dates { font-weight: 600; font-size: 20px; letter-spacing: .01em; }
+  .hero-badge .caption { font-size: 12px; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-64); }
+
+  .hero-media {
+    position: relative; border-radius: var(--radius-card); overflow: hidden;
+    min-height: 560px; background: var(--yellow-pale);
+  }
+  .hero-media img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ring { position: absolute; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(217,217,217,0) 62%, var(--yellow) 78%, rgba(239,230,37,0) 96%);
+  }
+  .hero-media .ring1 { width: 78%; aspect-ratio: 1; top: 4%; left: 2%; }
+  .hero-media .ring2 { width: 78%; aspect-ratio: 1; top: 4%; left: 22%; }
+  .hero-media .slight {
+    position: absolute; left: 24px; bottom: 12px;
+    font-family: var(--font-serif); font-style: italic;
+    color: var(--yellow); font-size: clamp(48px, 5vw, 72px); line-height: 1;
+  }
+  .hero-media .s-mark {
+    position: absolute; top: 20px; right: 24px; color: var(--yellow);
+    font-weight: 600; font-size: 28px; border-bottom: 2px solid var(--yellow); line-height: 1.15;
+  }
+
+  /* ---------- Seção 2: O Novo Jogo do Mercado ---------- */
+  .game { position: relative; padding: 8px; }
+  .game-inner {
+    border-radius: var(--radius-card); overflow: hidden; position: relative;
+    padding: 140px 0;
+  }
+  /* grid de gradientes do KV */
+  .kv-grid { position: absolute; inset: 0; display: grid;
+    grid-template-columns: 5fr 1fr; grid-template-rows: 92px 1fr 1fr 40px; z-index: 0; }
+  .kv-grid div:nth-child(1) { background: linear-gradient(78deg, #F2EE96 0%, #F5F6F6 99%); }
+  .kv-grid div:nth-child(2) { background: linear-gradient(42deg, #EFE625 1%, #F5F6F6 100%); }
+  .kv-grid div:nth-child(3) { background: linear-gradient(233deg, #EFE625 0%, #F5F6F6 100%); }
+  .kv-grid div:nth-child(4) { background: linear-gradient(71deg, #F5FA96 1%, #F5F6F6 100%); }
+  .kv-grid div:nth-child(5) { grid-column: 1 / -1; background: linear-gradient(223deg, #F5F6F6 0%, #F2EF98 28%, #EFE625 100%); }
+  .kv-grid div:nth-child(6) { grid-column: 1 / -1; background: linear-gradient(62deg, #EFE625 4%, #F5FA96 60%); }
+  .game .container { position: relative; z-index: 1; }
+  .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  h2 { font-size: clamp(34px, 3.6vw, 52px); line-height: 1.05; font-weight: 500; letter-spacing: -.018em; }
+  .game-text { display: flex; flex-direction: column; gap: 20px; padding-top: 10px; }
+  .game-text p { font-size: 17px; line-height: 1.6; }
+  .game-text p + p { color: var(--ink-64); }
+
+  /* ---------- Seção 3: A Chancela dos Bastidores ---------- */
+  .team { padding: 130px 0; }
+  .team-head { max-width: 680px; margin-bottom: 72px; display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+  .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .team-card { display: flex; flex-direction: column; gap: 20px; }
+  .team-photo {
+    position: relative; height: 460px; border-radius: 12px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .team-photo .ring { width: 88%; aspect-ratio: 1; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0; transition: opacity .4s ease; }
+  .team-card:hover .ring { opacity: 1; }
+  .team-photo.g1 { background: linear-gradient(233deg, #EFE625 0%, #F5F6F6 100%); }
+  .team-photo.g2 { background: linear-gradient(62deg, #EFE625 4%, #F5FA96 60%); }
+  .team-photo.g3 { background: linear-gradient(223deg, #F5F6F6 0%, #F2EF98 28%, #EFE625 100%); }
+  .team-photo .placeholder-note {
+    font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-64);
+  }
+  .team-meta { display: flex; flex-direction: column; gap: 6px; }
+  .team-meta .name { font-size: 23px; font-weight: 600; letter-spacing: -.01em; }
+  .team-meta .role { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--ink-64); }
+
+  /* ---------- Seção 4: Comando de Ação Final ---------- */
+  .final { padding: 8px; }
+  .final-inner {
+    position: relative; border-radius: var(--radius-card); overflow: hidden;
+    min-height: 540px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(223deg, #F5F6F6 0%, #F2EF98 30%, #EFE625 100%);
+  }
+  .final .ring { width: 640px; aspect-ratio: 1; top: -180px; right: -140px; }
+  .final .ring.b { top: auto; right: auto; bottom: -220px; left: -160px; }
+  .final-content { position: relative; z-index: 1; max-width: 720px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 28px; padding: 100px 32px; }
+
+  /* ---------- Footer ---------- */
+  footer { padding: 36px 0 44px; }
+  footer .container { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-64); }
+  footer a { color: var(--ink); text-decoration: none; font-weight: 500; }
+
+  /* ---------- Responsivo ---------- */
+  @media (max-width: 900px) {
+    .hero { padding-top: 120px; }
+    .hero-grid, .game-grid { grid-template-columns: 1fr; }
+    .hero-media { min-height: 440px; }
+    .team-grid { grid-template-columns: 1fr; }
+    .team-photo { height: 380px; }
+    .game-inner { padding: 96px 0; }
+  }
+  @media (max-width: 560px) {
+    .container { padding: 0 20px; }
+    .lead-form .row { grid-template-columns: 1fr; }
+    .hero-media { min-height: 340px; }
+    .topbar .date { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <a class="wordmark" href="#">Suporte <span>S/light</span></a>
+    <div class="date">05.06 — 11.06.2026</div>
+  </div>
+</header>
+
+<!-- BLOCO 1 · Hero + Formulário Aberto -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-copy-top">
+          <span class="label-pill reveal">Comunidade Suporte</span>
+          <h1 class="reveal" data-delay="1">A comunidade que coloca o creator <em class="serif-accent">sob as luzes</em> do mercado.</h1>
+          <p class="hero-sub reveal" data-delay="2">Algo novo está sendo construído nos bastidores. Poucos vão saber antes. Entre na lista e receba o que o mercado ainda não viu.</p>
+
+          <form class="lead-form reveal" data-delay="3" id="form" action="obrigado.html" method="get">
+            <input type="text" name="nome" placeholder="Nome" required />
+            <div class="row">
+              <input type="email" name="email" placeholder="E-mail" required />
+              <input type="text" name="instagram" placeholder="@ do Instagram" required />
+            </div>
+            <input type="tel" name="whatsapp" placeholder="WhatsApp" required />
+            <button class="btn" type="submit">Garantir acesso antecipado <span class="arrow">→</span></button>
+            <span class="form-note">Sem spam. Só o que importa, antes de todo mundo.</span>
+          </form>
+        </div>
+        <div class="hero-badge reveal">
+          <span class="dates">05.06—11.06.2026</span>
+          <span class="caption">Suporte Spotlight</span>
+        </div>
+      </div>
+
+      <div class="hero-media reveal" data-delay="1">
+        <img class="photo" src="img/fernanda.jpg" alt="Creator sob as luzes" />
+        <span class="ring ring1"></span>
+        <span class="ring ring2"></span>
+        <span class="s-mark">S</span>
+        <span class="slight">S/light</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOCO 2 · O Novo Jogo do Mercado -->
+<section class="game">
+  <div class="game-inner">
+    <div class="kv-grid" aria-hidden="true">
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+    <div class="container">
+      <div class="game-grid">
+        <h2 class="reveal">Ter seguidores não é ter uma <em class="serif-accent">marca</em>.</h2>
+        <div class="game-text">
+          <p class="reveal" data-delay="1">O mercado mudou. Grandes marcas não procuram mais audiência — procuram marcas pessoais maduras, com posicionamento, narrativa e bastidores organizados.</p>
+          <p class="reveal" data-delay="2">Esse é o gap que separa quem posta de quem assina contratos. E é exatamente nesse espaço que uma nova comunidade está nascendo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOCO 3 · A Chancela dos Bastidores -->
+<section class="team">
+  <div class="container">
+    <div class="team-head">
+      <span class="label-pill reveal">Quem abre os bastidores</span>
+      <h2 class="reveal" data-delay="1">Quem já negocia dos dois lados da mesa.</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-card reveal">
+        <div class="team-photo g1"><span class="ring"></span><span class="placeholder-note">Foto · Ricardo</span></div>
+        <div class="team-meta">
+          <span class="name">Ricardo Franca Cruz</span>
+          <span class="role">PR · Estratégia de imagem</span>
+        </div>
+      </div>
+      <div class="team-card reveal" data-delay="1">
+        <div class="team-photo g2"><span class="ring"></span><span class="placeholder-note">Foto · Renata</span></div>
+        <div class="team-meta">
+          <span class="name">Renata Grabert</span>
+          <span class="role">Mercado editorial · Comunicação</span>
+        </div>
+      </div>
+      <div class="team-card reveal" data-delay="2">
+        <div class="team-photo g3"><span class="ring"></span><span class="placeholder-note">Foto · Thiago</span></div>
+        <div class="team-meta">
+          <span class="name">Thiago Neves</span>
+          <span class="role">Bastidores · Grandes marcas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOCO 4 · Comando de Ação Final -->
+<section class="final">
+  <div class="final-inner">
+    <span class="ring"></span>
+    <span class="ring b"></span>
+    <div class="final-content">
+      <span class="label-pill outline reveal">Lista prioritária</span>
+      <h2 class="reveal" data-delay="1">Quem está na lista recebe os insights <em class="serif-accent">antes</em> do mercado.</h2>
+      <a class="btn reveal" data-delay="2" href="#form">Entrar pra lista <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span>suportecomunica.com.br</span>
+    <a href="#form">Faça parte</a>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
